@@ -1,0 +1,15 @@
+version: v1
+managed:
+  enabled: true
+plugins:
+  - name: go
+    out: ./
+    opt: paths=import
+  - name: go-grpc
+    out: ./
+    opt:
+      - paths=import
+      - require_unimplemented_servers=false
+  - name: struct-transformer
+    out: ./
+    opt: package=transform,debug=false,goimports=true,paths=import,use-package-in-path=true

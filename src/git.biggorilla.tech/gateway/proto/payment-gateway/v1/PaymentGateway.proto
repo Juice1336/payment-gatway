@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+package payment_gateway.v1;
+
+import "google/protobuf/empty.proto";
+import "options/annotations.proto";
+
+option go_package = "./payment-gateway/pb";
+option (transformer.go_models_file_path) = "payment-gateway/model/model.go";
+option (transformer.go_protobuf_package) = "pb";
+option (transformer.go_repo_package) = "model";
+
+service PaymentGatewayService {
+  rpc CreateMerchant(MerchantRequest) returns (GenericResponse) {}
+  rpc UpdateMerchant(MerchantUpdateRequest) returns (GenericResponse) {}
+  rpc GetMerchants(google.protobuf.Empty) returns (MerchantResponse) {}
+  rpc GenerateLink(GenerateLinkRequest) returns (LinkResponse) {}
+  rpc GetPluginLink(PluginLinkRequest) returns (LinkResponse) {}
+  rpc GetTransactions(TransactionRequest) returns (Transactions) {}
+  rpc GenerateDepositAddress(DepositAddressRequest) returns (DepositAddressResponse) {}
+  rpc GetPublicMerchantInfo(MerchantPublicRequest) returns (MerchantPublicResponse) {}
+}
+
+message MerchantRequest {
+  string name = 1;
+  string email = 2;
+  string address = 3;
+  string avatar = 4;
+}
+
+message MerchantUpdateRequest {
+  string name = 1;
+  string email = 2;
+  string address = 3;
+  string avatar = 4;
+  int64 merchant_id = 5;
+}
+
+message MerchantPublicResponse {
+  string name = 1;
+  string email = 2;
+  optional string address = 3;
+  optional string avatar = 4;
+  string merchant_id = 5;
+  string user_id = 6;
+}
+
+message MerchantPublicRequest {
+  string plugin_id = 1;
+}
+
+message LinkResponse {
+  string link = 1;
+}
+message MerchantData {
+  option (transformer.go_struct) = "Merchant";
+  int64 id = 1 [(transformer.map_to) = "ID"];
+  string name = 2 [(transformer.map_to) = "Name"];
+  string email = 3 [(transformer.map_to) = "Email"];
+  string user_id = 4 [(transformer.map_to) = "UserID"];
+  string avatar = 5 [(transformer.map_to) = "Avatar"];
+  string address = 6 [(transformer.map_to) = "Address"];
+}
+
+message TransactionRequest {
+  string merchant_id = 1;
+}
+
+message TransactionResponse {
+  option (transformer.go_struct) = "Transaction";
+  string tx_hash = 1 [(transformer.map_to) = "TxHash"];
+  string sender = 2 [(transformer.map_to) = "From"];
+  string reciever = 3 [(transformer.map_to) = "To"];
+  string value = 4 [(transformer.map_to) = "Value"];
+}
+message Transactions {
+  repeated TransactionResponse data = 1;
+}
+message MerchantResponse {
+  repeated MerchantData data = 1;
+}
+
+message DepositAddressRequest {
+  string cryptosymbol = 1;
+  string network = 2;
+  string plugin_id = 3;
+}
+
+message DepositAddressResponse {
+  string address = 1;
+}
+
+message GenerateLinkRequest {
+  int64 merchant_id = 1;
+}
+message PluginLinkRequest {
+  string merchant_id = 1;
+  string type = 2;
+}
+
+message GenericResponse {
+  int32 code = 1;
+  string message = 2;
+}
